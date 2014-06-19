@@ -47,8 +47,8 @@ animal = Animal { pKind = "Sheep"
 compute :: Creature -> Int
 compute c = foldl' (\i v -> i + v) 0 [0..n]
   where
-    bigN = 10^8
-    n = bigN + (l^4 `mod` bigN)
+    bigN = (10::Int)^(8::Int)
+    n = bigN + (l^(4::Int) `mod` bigN)
     l = length (show c)
 
 main :: IO ()
@@ -59,5 +59,5 @@ main = do
         _  -> memo compute
   let act () = mapM_ (putStrLn . show . computeFunction)
                [android,human,animal]
-  forM_ [0..100] $ \_ ->
+  forM_ [0..(100::Int)] $ \_ ->
     act ()

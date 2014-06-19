@@ -9,8 +9,8 @@ module Data.MemoTrie.Generic
  ( memo
  ) where
 
-import Data.MemoTrie(HasTrie(..))
 import GHC.Generics
+import Data.MemoTrie(HasTrie(..))
 
 memo :: (Generic a, GHasTrie (Rep a)) => (a -> b) -> (a -> b)
 memo f = (gUntrie $ gTrie (f . to)) . from
@@ -22,8 +22,8 @@ class GHasTrie (f :: * -> *) where
 
 instance GHasTrie V1 where
   data (V1 :=>: b) = V1Trie
-  gTrie _ = undefined
-  gUntrie _ = undefined
+  gTrie _ = V1Trie
+  gUntrie V1Trie = undefined
 
 instance GHasTrie U1 where
   data (U1 :=>: b) = U1Trie b
