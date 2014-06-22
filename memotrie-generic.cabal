@@ -1,0 +1,23 @@
+name:          memotrie-generic
+version:       0.0.0
+license:       BSD3
+author:        Anton Dubovik
+cabal-version: >= 1.8
+synopsis:      Revision of MemoTrie package in generic context
+build-type:    Simple
+category:      Data
+
+source-repository head
+  type:     git
+  location: https://github.com/adubovik/memotrie-generic.git
+
+library
+  build-depends:
+    base>=4.6.0.0
+  hs-source-dirs: src
+  exposed-modules:
+    Data.MemoTrie.Generic
+  ghc-options: -Wall -Werror -O2
+
+
+
