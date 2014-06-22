@@ -135,7 +135,7 @@ instance GHasTrie f => GHasTrie (M1 i t f) where
   gTrie f = M1Trie (gTrie (f . M1))
   gUntrie (M1Trie t) = gUntrie t . unM1
 
----- Deriving HasTrie instances via GHC.Generic machinery
+---- Deriving HasTrie instances via GHC.Generics machinery
 
 #define H(x) HasTrie (x)
 
