@@ -18,19 +18,19 @@ data Creature = Human { pName :: String
                       }
               | Android { pId :: Int
                         , pModel :: String
-                        -- FIXME: recursive datatypes
-                        -- aren't supported yet
-                        -- , pDreams :: [Creature]
+                        , pDreams :: [Creature]
                         }
               | Animal { pKind :: String
                        , pLegs :: Int
                        }
   deriving (Show,Generic)
 
+instance HasTrie Creature
+
 android :: Creature
 android = Android { pId = 5
                   , pModel = "Sonny"
-                  -- , pDreams = [animal]
+                  , pDreams = [animal]
                   }
 
 human :: Creature
@@ -55,8 +55,8 @@ main :: IO ()
 main = do
   args <- getArgs
   let computeFunction = case args of
-        [] -> compute
-        _  -> memo compute
+        [] -> compute      -- slow
+        _  -> memo compute -- fast
   let act () = mapM_ (putStrLn . show . computeFunction)
                [android,human,animal]
   forM_ [0..(100::Int)] $ \_ ->

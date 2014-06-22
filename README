@@ -1,1 +1,1 @@
-Generic amendment of MemoTrie package
+Revision of MemoTrie package in generic (GHC.Generics) context.
