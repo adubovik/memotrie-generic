@@ -180,6 +180,3 @@ instance H(Bool)
 instance H(a) => H([a])
 instance (H(a),H(b)) => H(Either a b)
 instance H(a) => H(Maybe a)
-
-
-
