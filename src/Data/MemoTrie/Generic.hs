@@ -13,6 +13,7 @@ module Data.MemoTrie.Generic
  , HasTrie(..)
  ) where
 
+import Control.Arrow
 import Data.Bits
 import Data.Word
 import Data.Int
@@ -45,7 +46,7 @@ mup :: HasTrie t => (b -> c) -> (t -> b) -> (t -> c)
 mup mem f = memo (mem . f)
 
 ---- HasTrie instances for primitive types
--- (straight from Data.MemoTrie@MemoTrie)
+-- (copied from Data.MemoTrie@MemoTrie)
 
 #define IntInstance(IntType,WordType,TrieType) \
 newtype TrieType a = TrieType a; \
@@ -78,15 +79,14 @@ bits :: (Num t, Bits t) => t -> [Bool]
 bits 0 = []
 bits x = testBit x 0 : bits (shiftR x 1)
 
--- | Convert boolean to 0 (False) or 1 (True)
-unbit :: Num t => Bool -> t
-unbit False = 0
-unbit True  = 1
-
 -- | Bit list to value
 unbits :: (Num t, Bits t) => [Bool] -> t
 unbits [] = 0
 unbits (x:xs) = unbit x .|. shiftL (unbits xs) 1
+  where
+    unbit :: Num t => Bool -> t
+    unbit False = 0
+    unbit True  = 1
 
 newtype CharTrie a = CharTrie a
 
@@ -94,6 +94,34 @@ instance HasTrie Char where
   type Char :->: a = CharTrie (Int :->: a)
   untrie (CharTrie t) n = untrie t (fromEnum n)
   trie f = CharTrie (trie (f . toEnum))
+
+newtype IntegerTrie a = IntegerTrie a
+
+instance HasTrie Integer where
+    type Integer :->: a = IntegerTrie ((Bool,[Bool]) :->: a)
+    trie f = IntegerTrie (trie (f . unbitsZ))
+      where
+        unbitsZ :: (Num n, Bits n) => (Bool,[Bool]) -> n
+        unbitsZ (positive,bs) = sig (unbits bs)
+          where
+            sig | positive  = id
+                | otherwise = negate
+    untrie (IntegerTrie t) = untrie t . bitsZ
+      where
+        bitsZ :: (Num n, Ord n, Bits n) => n -> (Bool,[Bool])
+        bitsZ = (>= 0) &&& (bits . abs)
+
+---- Instance for floating point types
+
+#define FloatInstance(FloatType,TrieType) \
+newtype TrieType a = TrieType a; \
+instance HasTrie FloatType where \
+    type FloatType :->: a = TrieType ((Integer,Int) :->: a); \
+    trie f = TrieType (trie (f . uncurry encodeFloat)); \
+    untrie (TrieType t) = untrie t . decodeFloat;
+
+FloatInstance(Float,FloatTrie)
+FloatInstance(Double,DoubleTrie)
 
 ---- Generic counterpart of HasTrie - GHasTrie
 
